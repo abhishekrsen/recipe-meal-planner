@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <!-- Background Circle Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7e29" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+    
+    <!-- Curry Gravy Gradient -->
+    <linearGradient id="curryGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Badge -->
+  <circle cx="50" cy="50" r="46" fill="url(#bgGrad)" stroke="#c2410c" stroke-width="4" />
+
+  <!-- Steam Trails -->
+  <path d="M40 28 Q37 20 42 14" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85" />
+  <path d="M50 25 Q54 18 49 11" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.95" />
+  <path d="M60 28 Q63 20 58 14" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85" />
+
+  <!-- Earthen Pot / Chatti Base -->
+  <path d="M22 48 Q18 78 50 78 Q82 78 78 48 Z" fill="#78350f" stroke="#451a03" stroke-width="4" />
+
+  <!-- Pot Rim -->
+  <ellipse cx="50" cy="48" rx="30" ry="8" fill="#92400e" stroke="#451a03" stroke-width="3.5" />
+
+  <!-- Simmering Gravy Surface -->
+  <ellipse cx="50" cy="48" rx="25" ry="5.5" fill="url(#curryGrad)" />
+
+  <!-- Small Tadka / Curry Leaves floating -->
+  <ellipse cx="44" cy="48" rx="3" ry="1.5" fill="#15803d" transform="rotate(-15 44 48)" />
+  <ellipse cx="56" cy="47" rx="2.5" ry="1.2" fill="#166534" transform="rotate(20 56 47)" />
+
+  <!-- Chili piece in curry -->
+  <path d="M48 48 Q52 46 51 50" stroke="#dc2626" stroke-width="2" stroke-linecap="round" fill="none" />
+</svg>
