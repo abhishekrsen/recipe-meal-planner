@@ -1,65 +1,70 @@
 import { useState, useEffect } from "react";
-import { initialMenu } from "./data/initialRecipes";
 import RoleSelector from "./components/RoleSelector";
 import CustomerView from "./components/CustomerView";
 import AdminDashboard from "./components/AdminDashboard";
 import "./App.css";
 
+const API_BASE = "http://localhost:8000/api";
+
 export default function App() {
-  const [role, setRole] = useState(null); // null | "customer" | "admin"
+  const [role, setRole] = useState(null);
+  const [menu, setMenu] = useState([]);
+  const [orders, setOrders] = useState([]);
 
-  const [menu, setMenu] = useState(() => {
-    const saved = localStorage.getItem("restaurant_menu");
-    return saved ? JSON.parse(saved) : initialMenu;
-  });
-
-  const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem("restaurant_orders");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const fetchData = async () => {
+    try {
+      const [menuRes, ordersRes] = await Promise.all([
+        fetch(`${API_BASE}/menu`),
+        fetch(`${API_BASE}/orders`),
+      ]);
+      if (menuRes.ok) setMenu(await menuRes.json());
+      if (ordersRes.ok) setOrders(await ordersRes.json());
+    } catch (err) {
+      console.error("Backend connection error:", err);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem("restaurant_menu", JSON.stringify(menu));
-  }, [menu]);
-
-  useEffect(() => {
-    localStorage.setItem("restaurant_orders", JSON.stringify(orders));
-  }, [orders]);
-
-  // Real-time sync across tabs so Admin sees Customer orders immediately
-  useEffect(() => {
-    const handleStorageSync = (e) => {
-      if (e.key === "restaurant_orders" && e.newValue) {
-        setOrders(JSON.parse(e.newValue));
-      }
-      if (e.key === "restaurant_menu" && e.newValue) {
-        setMenu(JSON.parse(e.newValue));
-      }
-    };
-    window.addEventListener("storage", handleStorageSync);
-    return () => window.removeEventListener("storage", handleStorageSync);
+    fetchData();
+    const interval = setInterval(fetchData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
-  const handlePlaceOrder = (newOrder) => {
-    setOrders((prev) => [newOrder, ...prev]);
+  const handlePlaceOrder = async (newOrder) => {
+    await fetch(`${API_BASE}/orders`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newOrder),
+    });
+    fetchData();
   };
 
-  const handleUpdateOrderStatus = (orderId, newStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-    );
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    await fetch(`${API_BASE}/orders/${orderId}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    fetchData();
   };
 
-  const handleDeleteOrder = (orderId) => {
-    setOrders((prev) => prev.filter((o) => o.id !== orderId));
+  const handleDeleteOrder = async (orderId) => {
+    await fetch(`${API_BASE}/orders/${orderId}`, { method: "DELETE" });
+    fetchData();
   };
 
-  const handleAddMenuItem = (item) => {
-    setMenu((prev) => [item, ...prev]);
+  const handleAddMenuItem = async (item) => {
+    await fetch(`${API_BASE}/menu`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(item),
+    });
+    fetchData();
   };
 
-  const handleDeleteMenuItem = (id) => {
-    setMenu((prev) => prev.filter((m) => m.id !== id));
+  const handleDeleteMenuItem = async (id) => {
+    await fetch(`${API_BASE}/menu/${id}`, { method: "DELETE" });
+    fetchData();
   };
 
   if (!role) {
